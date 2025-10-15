@@ -1,1 +1,112 @@
+1️⃣ What “static” really means
+Think of a class like a car factory.
+Normally, to use anything (horn, color), you need a car object.
+static = belongs to the factory itself, not individual cars.
 
+
+2️⃣ Static variables — “shared factory data”
+class Car {
+    static int wheels = 4;  // shared by all cars
+    String color;           // unique per car
+}
+Access before any objects:
+System.out.println(Car.wheels); // ✅ works
+System.out.println(Car.color);  // ❌ error, needs an object
+
+
+
+3️⃣ Static methods — “factory-level tools”
+Can be called without creating objects.
+class MathUtils {
+    static int add(int a, int b) { return a + b; }
+}
+int sum = MathUtils.add(3, 4); // ✅ works, without calling any function.
+
+
+❌ Cannot use non-static variables directly:
+class Car {
+    String color;
+    static void showColor() {
+        System.out.println(color); // ❌ which car’s color?
+    }
+}
+
+
+✅ Can pass an object:
+static void showColor(Car car) {
+    System.out.println(car.color); // ✅ works
+}
+
+
+4️⃣ Static blocks — “factory setup time”
+Run once per class load, before main().
+class UseStatic {
+    static int a = 3;
+    static int b;
+    static {
+        System.out.println("Static block initialized");
+        b = a * 4;
+    }
+    public static void main(String[] args) {
+        System.out.println("a = " + a + ", b = " + b);
+    }
+}
+
+Output:
+Static block initialized
+a = 3, b = 12
+Multiple static blocks → execute top-to-bottom.
+Static blocks of main class → always before main().
+Static blocks of other classes → run when first referenced.
+
+
+5️⃣ Static classes — “nested classes that don’t need outer object”
+public class Outer {
+    static class Inner {
+        String name;
+        Inner(String n) { name = n; }
+    }
+
+    public static void main(String[] args) {
+        Inner a = new Inner("Adit");
+        System.out.println(a.name);
+    }
+}
+✅ Inner works independently of Outer.
+
+
+
+❌ Non-static nested class would require an Outer object first.
+6️⃣ Why main() is static
+JVM calls main() before any objects exist:
+public static void main(String[] args)
+
+
+7️⃣ Static method overriding rules
+Static methods cannot be overridden (resolved at compile-time).
+Subclass can hide parent static methods, not override.
+
+
+
+8️⃣ Static methods in interfaces
+interface Test {
+    static void sayHi() { System.out.println("Hi"); }
+}
+class Demo implements Test {}
+Test.sayHi();          // ✅ Works
+// new Demo().sayHi(); // ❌ Not allowed
+
+
+
+9️⃣ Memory & Access Summary
+Concept	Belongs To	Accessed By	Needs Object?
+Static Variable	Class	ClassName.variable	❌
+Static Method	Class	ClassName.method()	❌
+Instance Variable	Object	obj.variable	✅
+Instance Method	Object	obj.method()	✅
+10️⃣ Execution Timeline
+1️⃣ JVM starts
+2️⃣ Load main class → run its static fields & static blocks
+3️⃣ main() executes
+4️⃣ Other classes loaded on first reference → their static blocks run
+5️⃣ Object creation → instance blocks/constructors run
