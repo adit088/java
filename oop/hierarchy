@@ -1,0 +1,28 @@
+✅ Static blocks = run once per class load.
+✅ Main class static blocks = always before main().
+✅ Other class static blocks = first reference triggers them.
+✅ Must be inside class, cannot use instance members.
+✅ Multiple static blocks = top-to-bottom execution.
+✅ Execution order = class load -> static init -> main() -> instance creation.
+
+
+  BEST EXAMPLE FOR THIS
+  class MainClass {
+    static { System.out.println("MainClass static"); }
+
+    public static void main(String[] args) {
+        System.out.println("Inside main");
+        Helper.sayHello();
+    }
+}
+
+class Helper {
+    static { System.out.println("Helper static"); }
+    static void sayHello() { System.out.println("Hello from Helper"); }
+}
+
+output 
+MainClass static   // main class static block
+Inside main        // main() runs
+Helper static      // helper class initialized now
+Hello from Helper  // method executes
